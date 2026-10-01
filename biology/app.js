@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Плеер презентации: навигация, миниатюры, заметки учителя, полный экран
+   Плеер презентации: навигация, миниатюры, вопрос к классу, полный экран
    ========================================================================== */
 (function () {
   "use strict";
@@ -54,7 +54,7 @@
     slideImg.alt = "Слайд " + s.n + ": " + s.title;
     slideChip.textContent = s.n + " / " + total;
     notesTitle.textContent = s.title;
-    notesBody.textContent = s.notes || "Для этого слайда заметок нет.";
+    notesBody.textContent = s.notes || "Для этого слайда вопрос не задаётся.";
 
     progressFill.style.width = ((index + 1) / total * 100) + "%";
 
@@ -102,7 +102,7 @@
     }
   });
 
-  /* --------------------------- Заметки учителя --------------------------- */
+  /* ---------------------------- Вопрос к классу --------------------------- */
   function toggleNotes() {
     var hidden = notesPanel.classList.toggle("hidden");
     notesToggle.setAttribute("aria-pressed", hidden ? "false" : "true");
