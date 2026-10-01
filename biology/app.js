@@ -7,13 +7,14 @@
   var slides = (window.SLIDES || []).slice().sort(function (a, b) { return a.n - b.n; });
   var total = slides.length;
   var index = 0;
+  var revealed = false; // показан ли вопрос поверх текущего слайда
 
   var slideImg   = document.getElementById("slideImg");
+  var slideFrame = slideImg.parentElement;
   var slideChip  = document.getElementById("slideChip");
-  var notesTitle = document.getElementById("notesTitle");
-  var notesBody  = document.getElementById("notesBody");
-  var notesPanel = document.getElementById("notesPanel");
-  var notesToggle= document.getElementById("notesToggle");
+  var qPanel     = document.getElementById("qPanel");
+  var qBody      = document.getElementById("qBody");
+  var qToggle    = document.getElementById("qToggle");
   var progressFill = document.getElementById("progressFill");
   var thumbsEl   = document.getElementById("thumbs");
   var prevBtn    = document.getElementById("prevBtn");
@@ -52,15 +53,16 @@
 
     slideImg.src = src(s.n);
     slideImg.alt = "Слайд " + s.n + ": " + s.title;
+    slideImg.classList.remove("swap");
+    void slideImg.offsetWidth; // перезапуск анимации появления
+    slideImg.classList.add("swap");
     slideChip.textContent = s.n + " / " + total;
-    notesTitle.textContent = s.title;
-    notesBody.textContent = s.notes || "Для этого слайда вопрос не задаётся.";
+    qBody.textContent = s.notes || "Для этого слайда вопрос не задаётся.";
 
     progressFill.style.width = ((index + 1) / total * 100) + "%";
 
-    prevBtn.disabled = nextBtn.disabled = index === 0;
-    prevBtn2.disabled = index === 0;
-    nextBtn2.disabled = index === total - 1;
+    prevBtn.disabled = prevBtn2.disabled = index === 0;
+    nextBtn.disabled = nextBtn2.disabled = index === total - 1 && revealed;
 
     var active = thumbsEl.querySelector(".thumb.active");
     if (active) active.classList.remove("active");
@@ -74,12 +76,32 @@
     document.title = s.title + " — Многощетинковые черви. Пиявки";
   }
 
+  /* ---------------------------- Вопрос к классу --------------------------- */
+  function setRevealed(on) {
+    revealed = !!on;
+    slideFrame.classList.toggle("q-open", revealed);
+    qPanel.setAttribute("aria-hidden", revealed ? "false" : "true");
+    qToggle.setAttribute("aria-pressed", revealed ? "true" : "false");
+    nextBtn.disabled = nextBtn2.disabled = index === total - 1 && revealed;
+  }
+
   function go(i) {
     index = Math.max(0, Math.min(total - 1, i));
     render();
+    setRevealed(false);
   }
-  function next() { if (index < total - 1) go(index + 1); }
-  function prev() { if (index > 0) go(index - 1); }
+
+  // «Дальше» сначала показывает вопрос на слайде, и только потом листает
+  function next() {
+    if (!revealed) { setRevealed(true); return; }
+    if (index < total - 1) go(index + 1);
+  }
+
+  // «Назад» сначала прячет вопрос, и только потом листает
+  function prev() {
+    if (revealed) { setRevealed(false); return; }
+    if (index > 0) go(index - 1);
+  }
 
   /* ------------------------------- События ------------------------------- */
   prevBtn.addEventListener("click", prev);
@@ -97,17 +119,14 @@
       case "PageUp": e.preventDefault(); prev(); break;
       case "Home": e.preventDefault(); go(0); break;
       case "End": e.preventDefault(); go(total - 1); break;
-      case "n": case "N": case "т": case "Т": toggleNotes(); break;
+      case "n": case "N": case "т": case "Т": toggleQuestion(); break;
       case "f": case "F": case "а": case "А": toggleFull(); break;
     }
   });
 
   /* ---------------------------- Вопрос к классу --------------------------- */
-  function toggleNotes() {
-    var hidden = notesPanel.classList.toggle("hidden");
-    notesToggle.setAttribute("aria-pressed", hidden ? "false" : "true");
-  }
-  notesToggle.addEventListener("click", toggleNotes);
+  function toggleQuestion() { setRevealed(!revealed); }
+  qToggle.addEventListener("click", toggleQuestion);
 
   /* ------------------------------ Полный экран --------------------------- */
   function toggleFull() {

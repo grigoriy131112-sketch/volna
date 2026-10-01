@@ -147,9 +147,8 @@ h1,h2,h3{font-family:var(--font-display);line-height:1.08;margin:0;letter-spacin
 
 .stage-wrap{max-width:1200px;margin:0 auto}
 .stage{
-  display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:1.4rem;align-items:start;
+  display:grid;grid-template-columns:minmax(0,1fr);gap:1.4rem;align-items:start;
 }
-@media(max-width:980px){.stage{grid-template-columns:1fr}}
 
 .slide-frame{
   position:relative;background:#04121f;border-radius:var(--radius);
@@ -157,6 +156,13 @@ h1,h2,h3{font-family:var(--font-display);line-height:1.08;margin:0;letter-spacin
   aspect-ratio:16/9;
 }
 .slide-frame img{width:100%;height:100%;object-fit:contain;background:#04121f}
+.slide-frame img.swap{animation:slideSwap .42s cubic-bezier(.22,.68,.28,1)}
+@keyframes slideSwap{from{opacity:0;transform:scale(.982)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){
+  .slide-frame img.swap{animation:none}
+  .q-panel{transition:none}
+  .q-head .dot{animation:none}
+}
 .nav-arrow{
   position:absolute;top:50%;transform:translateY(-50%);
   width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
@@ -175,21 +181,54 @@ h1,h2,h3{font-family:var(--font-display);line-height:1.08;margin:0;letter-spacin
   padding:.3rem .75rem;border-radius:999px;letter-spacing:.06em;backdrop-filter:blur(6px);
 }
 
-/* Заметки учителя */
-.notes{
-  background:var(--paper);border-radius:var(--radius);padding:1.5rem 1.5rem 1.7rem;
-  border:1px solid var(--line);box-shadow:var(--shadow);position:relative;overflow:hidden;
-  transition:opacity .3s ease,transform .3s ease;
+/* Вопрос к классу: панель поверх слайда */
+.q-panel{
+  position:absolute;left:0;right:0;bottom:0;z-index:4;
+  background:linear-gradient(180deg,rgba(4,18,31,.55) 0%,rgba(4,18,31,.92) 34%,rgba(4,18,31,.97) 100%);
+  backdrop-filter:blur(10px);
+  padding:clamp(1rem,2.6vh,2.2rem) clamp(1.2rem,3vw,2.6rem) clamp(1.1rem,2.8vh,2.3rem);
+  border-top:3px solid var(--gold);
+  transform:translateY(101%);opacity:0;visibility:hidden;
+  transition:transform .42s cubic-bezier(.22,.68,.28,1),opacity .3s ease,visibility .42s;
 }
-.notes::before{content:"";position:absolute;top:0;left:0;width:100%;height:5px;background:linear-gradient(90deg,var(--gold),var(--rose),var(--teal))}
-.notes-head{display:flex;align-items:center;gap:.55rem;margin-bottom:1rem}
-.notes-head .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(232,168,58,.2)}
-.notes-head h3{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);font-weight:700}
-.notes-title{font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--deep);margin:.2rem 0 .8rem}
-.notes-body{font-size:.95rem;color:#2c3d4c;margin:0}
-.notes-hint{margin:1.3rem 0 0;font-size:.76rem;color:#93a2b0;font-style:italic;border-top:1px dashed var(--line);padding-top:.9rem}
-.notes.hidden{display:none}
-@media(max-width:980px){.notes.hidden{display:none}}
+.q-panel::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--gold),var(--rose),var(--teal))}
+.slide-frame.q-open .q-panel{transform:translateY(0);opacity:1;visibility:visible}
+.q-head{display:flex;align-items:center;gap:.55rem;margin-bottom:.55rem}
+.q-head .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(232,168,58,.25);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(232,168,58,.25)}50%{box-shadow:0 0 0 8px rgba(232,168,58,.05)}}
+.q-head span:last-child{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.q-body{
+  font-family:var(--font-display);color:#fff;margin:0;font-weight:600;line-height:1.35;
+  font-size:clamp(1.05rem,2.5vw,1.7rem);
+}
+.q-more{display:block;margin-top:.9rem;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(234,255,248,.5)}
+
+/* Полный экран */
+.stage-wrap:fullscreen,.stage-wrap:-webkit-full-screen{
+  max-width:none;width:100vw;height:100vh;padding:0;margin:0;
+  display:flex;flex-direction:column;justify-content:center;gap:0;
+  background:#04121f;overflow:hidden;
+}
+.stage-wrap:fullscreen .viewer-head,.stage-wrap:-webkit-full-screen .viewer-head,
+.stage-wrap:fullscreen .controlbar,.stage-wrap:-webkit-full-screen .controlbar,
+.stage-wrap:fullscreen .thumbs,.stage-wrap:-webkit-full-screen .thumbs,
+.stage-wrap:fullscreen .kbd-hint,.stage-wrap:-webkit-full-screen .kbd-hint{display:none}
+.stage-wrap:fullscreen .stage,.stage-wrap:-webkit-full-screen .stage{
+  grid-template-columns:1fr;height:100vh;align-items:center;
+}
+.stage-wrap:fullscreen .slide-frame,.stage-wrap:-webkit-full-screen .slide-frame{
+  width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;border:none;box-shadow:none;
+}
+.stage-wrap:fullscreen .slide-frame img,.stage-wrap:-webkit-full-screen .slide-frame img{
+  width:100%;height:100%;object-fit:contain;
+}
+.stage-wrap:fullscreen .nav-arrow{opacity:.35}
+.stage-wrap:fullscreen .slide-frame:hover .nav-arrow{opacity:1}
+.stage-wrap:fullscreen .q-body{font-size:clamp(1.3rem,2.6vw,2.3rem)}
+@media(max-width:980px){
+  .slide-frame{aspect-ratio:auto}
+  .slide-frame img{height:auto}
+}
 
 /* Панель управления */
 .controlbar{display:flex;align-items:center;gap:1rem;margin:1.4rem 0 1.2rem}

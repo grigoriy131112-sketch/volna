@@ -94,7 +94,7 @@
       <h2>Презентация урока</h2>
     </div>
     <div class="viewer-tools">
-      <button class="tool" id="notesToggle" type="button" aria-pressed="true" title="Показать/скрыть вопрос к классу (N)">
+      <button class="tool" id="qToggle" type="button" aria-pressed="false" title="Показать/скрыть вопрос к классу (N)">
         <svg viewBox="0 0 24 24" class="ic"><path d="M4 4h16v12H8l-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
         <span>Вопрос</span>
       </button>
@@ -121,17 +121,17 @@
           <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <span class="slide-chip" id="slideChip">1 / 12</span>
-      </div>
 
-      <aside class="notes" id="notesPanel">
-        <div class="notes-head">
-          <span class="dot"></span>
-          <h3>Вопрос к классу</h3>
+        <!-- Вопрос к классу: выезжает поверх слайда по кнопке «Дальше» -->
+        <div class="q-panel" id="qPanel" aria-hidden="true">
+          <div class="q-head">
+            <span class="dot"></span>
+            <span>Вопрос к классу</span>
+          </div>
+          <p class="q-body" id="qBody">—</p>
+          <span class="q-more">«Дальше» — перейти к следующему слайду</span>
         </div>
-        <p class="notes-title" id="notesTitle">—</p>
-        <p class="notes-body" id="notesBody">—</p>
-        <p class="notes-hint">Обсудите вопрос после показа слайда — дайте 10–15 секунд на размышление.</p>
-      </aside>
+      </div>
     </div>
 
     <!-- Навигация -->
@@ -152,7 +152,7 @@
     <!-- Миниатюры -->
     <div class="thumbs" id="thumbs" role="tablist" aria-label="Слайды"></div>
     <p class="kbd-hint">
-      <kbd>←</kbd> <kbd>→</kbd> листать · <kbd>N</kbd> вопрос · <kbd>F</kbd> во весь экран
+      <kbd>←</kbd> <kbd>→</kbd> листать · <kbd>N</kbd> вопрос к классу · <kbd>F</kbd> во весь экран
     </p>
   </div>
 </section>
