@@ -48,6 +48,8 @@ body {
   overflow-x: hidden;
   position: relative;
   transition: background-color .35s, color .35s;
+  /* Mulish даёт слишком узкий пробел — без этого слова слипаются */
+  word-spacing: .1em;
 }
 
 body::before {
@@ -347,18 +349,21 @@ html[data-theme='night'] .tool-sep { background: rgba(255,255,255,.14); }
 
 /* notebook */
 .notebook { position: relative; }
-.paper {
+/* отступ слева считается от красной линии, поэтому текст никогда её не задевает */
+.notebook .paper {
+  --line-x: 40px;
+  --line-gap: 22px;
   position: relative; background: var(--card); border-radius: 22px; box-shadow: var(--shadow-lg);
-  min-height: 520px; padding: 30px 34px 30px 62px; overflow: hidden;
+  min-height: 520px; padding: 30px 34px 30px calc(var(--line-x) + var(--line-gap)); overflow: hidden;
   background-image: repeating-linear-gradient(to bottom, transparent 0 33px, rgba(46,40,35,.11) 33px 34px);
   background-position: 0 30px;
 }
 html[data-theme='night'] .paper { background-image: repeating-linear-gradient(to bottom, transparent 0 33px, rgba(255,255,255,.09) 33px 34px); }
 .paper::before {
-  content: ''; position: absolute; top: 0; bottom: 0; left: 40px; width: 2px;
-  background: rgba(255, 122, 122, .45);
+  content: ''; position: absolute; top: 0; bottom: 0; left: var(--line-x); width: 2px;
+  background: #D95656;
 }
-html[data-theme='night'] .paper::before { background: rgba(228, 92, 107, .5); }
+html[data-theme='night'] .paper::before { background: rgba(255, 138, 146, .9); }
 .paper::after {
   content: ''; position: absolute; top: -14px; right: 44px; width: 104px; height: 30px;
   background: repeating-linear-gradient(45deg, rgba(150, 225, 190, .85) 0 7px, rgba(120, 210, 175, .85) 7px 14px);
@@ -472,8 +477,11 @@ html[data-theme='night'] .paper::before { background: rgba(228, 92, 107, .5); }
   .dlist { max-height: none; flex-direction: row; overflow-x: auto; padding-bottom: 6px; }
   .dlist .dsearch { display: none; }
   .entry { min-width: 200px; }
-  .paper { padding: 26px 22px 26px 46px; }
-  .paper::before { left: 28px; }
+  .notebook .paper { padding: 26px 22px 26px calc(var(--line-x) + var(--line-gap)); }
+}
+@media (max-width: 560px) {
+  /* на узких экранах линия стояла правее текста — теперь отступ считается от линии */
+  .notebook .paper { --line-x: 18px; --line-gap: 20px; padding: 22px 18px 22px calc(var(--line-x) + var(--line-gap)); }
 }
 @media print {
   body * { visibility: hidden; }
