@@ -278,10 +278,17 @@ function openLockDialog(mode) {
   document.getElementById('passEye2').textContent = '👁';
   document.getElementById('passRow2').hidden = !first;
   document.getElementById('lockMsg').textContent = '';
+  // Пока записи заперты, окно пароля закрывать нельзя: иначе пароль больше не спросят.
+  const mustUnlock = mode === 'unlock';
+  document.getElementById('lockClose').hidden = mustUnlock;
+  document.getElementById('lockCancel').hidden = mustUnlock;
   document.getElementById('lockOverlay').classList.add('open');
   setTimeout(() => document.getElementById('passInput').focus(), 60);
 }
-function closeLockDialog() { document.getElementById('lockOverlay').classList.remove('open'); }
+function closeLockDialog() {
+  if (locked && !cipher) return;   // заперто и пароль ещё не введён — не закрываем
+  document.getElementById('lockOverlay').classList.remove('open');
+}
 
 function lockError(text, field) {
   const msg = document.getElementById('lockMsg');
