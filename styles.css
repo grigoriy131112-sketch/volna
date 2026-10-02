@@ -39,6 +39,10 @@ html[data-theme='night'] {
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Атрибут hidden должен побеждать: у .btn, .lock-banner и .mood-link задан display,
+   и без этого правила они остаются видимыми даже с hidden. */
+[hidden] { display: none !important; }
+
 body {
   font-family: var(--font-body);
   color: var(--ink);
